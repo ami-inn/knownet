@@ -6,6 +6,7 @@ import jwt, { Secret } from "jsonwebtoken";
 require('dotenv').config()
 import ejs from 'ejs'
 import path from "path";
+import sendMail from "../utils/sendMail";
 
 
 // register User
@@ -40,7 +41,26 @@ export const registerationUser = CatchAsynError(async(req:Request,res:Response,n
 
         const data = {user:{name:user.name},activationCode}
 
-        const html = await ejs.renderFile(path.join(__dirname))
+        const html = await ejs.renderFile(path.join(__dirname,"../mails/activation-mail.ejs"),data)//template path in string
+
+        try {
+
+            await sendMail({
+                email:user.email,
+                subject:'Activate Your Account',
+                template:'activation-mail.ejs',
+                data
+            })
+
+            res.status(200).json({
+                success:true,
+                message:'please check your email to activate your account',
+                activationToken:activationToken.token
+            })
+            
+        } catch (error:any) {
+            return next(new ErrorHandler(error.message,400))
+        }
 
         
     } catch (error:any) {
