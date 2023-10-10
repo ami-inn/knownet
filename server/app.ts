@@ -3,6 +3,8 @@ export const app = express();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 require("dotenv").config();
+import {ErrorMiddleware} from "./middleware/error";
+
 
 // Body Parser
 app.use(express.json({ limit: "50mb" })); // limit of the body parser data
@@ -34,3 +36,5 @@ app.all("*",(req: Request, res: Response, next: NextFunction) => {
     const err = new Error(`Route ${req.originalUrl} not found`)
     next(err)
 })
+
+app.use(ErrorMiddleware)// use it not call it
