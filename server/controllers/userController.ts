@@ -1,5 +1,5 @@
 import { Request,Response,NextFunction } from "express";
-import userModel from "../models/usermodel";
+import userModel, { IUser } from "../models/usermodel";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsynError } from "../middleware/catchAsyncError";
 import jwt, { Secret } from "jsonwebtoken";
@@ -23,6 +23,9 @@ export const registerationUser = CatchAsynError(async(req:Request,res:Response,n
 
         const {name,email,password} = req.body
 
+        console.log(req.body);
+        
+
         const isEmailExist = await userModel.findOne({email})
 
         if(isEmailExist){
@@ -34,6 +37,9 @@ export const registerationUser = CatchAsynError(async(req:Request,res:Response,n
             email,
             password
         }
+
+        console.log(user);
+        
 
         const activationToken = createActivationToken(user)
 
@@ -75,7 +81,7 @@ interface isActivationToken{
 
 
 export const createActivationToken = (user:any):isActivationToken =>{
-    const activationCode = Math.floor(1000+ Math.random()+9000).toString()
+    const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
     const token = jwt.sign({
         user,activationCode
@@ -83,3 +89,56 @@ export const createActivationToken = (user:any):isActivationToken =>{
 
     return {token,activationCode}
 }
+
+
+// activate user
+
+interface IActivationRequest{
+    activation_token:string,
+    activation_code:string,
+}
+
+export const activateUser = CatchAsynError(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        console.log('enter here');
+        
+        const {activation_token,activation_code} = req.body as IActivationRequest
+
+        const newUser:{user:IUser; activationCode:string } = jwt.verify(
+            activation_token,
+            process.env.ACTIVATION_SECRET as string
+        ) as {user:IUser;activationCode:string}
+
+        if(newUser.activationCode !== activation_code){
+            return next(new ErrorHandler("Invalid activation code",400))
+        }
+
+        const {name,email,password} = newUser.user
+
+        console.log(newUser.user);
+        
+        const existUser = await userModel.findOne({email})
+        if(existUser){
+            return next(new ErrorHandler("user already exist",400))
+        }
+
+        console.log('enteree',name,email,password);
+        
+
+        const user = await userModel.create({
+            name,
+            email,
+            password
+        })
+
+        console.log(user);
+        
+
+        res.status(201).json({
+            success:true,
+        })
+
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})
