@@ -8,6 +8,7 @@ import ejs from 'ejs'
 import path from "path";
 import sendMail from "../utils/sendMail";
 import { sendToken } from "../utils/jwt";
+import { isAsyncFunction } from "util/types";
 
 
 // register User
@@ -183,4 +184,22 @@ export const loginUser = CatchAsynError(async(req:Request,res:Response,next:Next
         return next(new ErrorHandler(error.message,404))
     }
 
+})
+
+
+// logout user
+
+export const logoutUser = CatchAsynError(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        res.cookie("access_token","",{maxAge:1}) // when logout we are setting the access token and the refresh token to empty
+        res.cookie("refresh_token","",{maxAge:1})
+
+        res.status(200).json({
+            succes:true,
+            message:'logout successfully'
+        })
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,404))
+    }
 })
