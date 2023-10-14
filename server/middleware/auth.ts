@@ -11,7 +11,6 @@ export const isAuthenticated = CatchAsynError(async(req:Request,res:Response,nex
     console.log(req.cookies);
     
 
-    console.log('erhej');
 
     console.log(access_token);
     
@@ -29,7 +28,7 @@ export const isAuthenticated = CatchAsynError(async(req:Request,res:Response,nex
         return next(new ErrorHandler("access token is not valid ",400))
     }
     
-    console.log('enter here');
+   
 
     const user = await redis.get(decoded.id) // because store datea in redis cache
 
@@ -41,3 +40,20 @@ export const isAuthenticated = CatchAsynError(async(req:Request,res:Response,nex
     req.user = JSON.parse(user)
     next()
 })
+
+// validate user role
+
+export const authorizeRoles = (...roles:string[]) => {
+
+    // its not allow only for admin
+
+    return (req:Request,res:Response,next:NextFunction) =>{
+        
+        if(!roles.includes(req.user?.role || "")){
+
+            return next (new ErrorHandler(`role ${req.user?.role} is not allowed to access this resource`,400))
+        }
+
+        next()
+    }
+}
