@@ -252,6 +252,8 @@ export const updateAccessToken = CatchAsynError(async(req:Request,res:Response,n
 
             // update the cookie
 
+            req.user = user
+
             res.cookie("access_token",accessToken,accessTokenOptions)
             res.cookie("refresh_token",refreshToken,refreshTokenOptions)
 
@@ -309,10 +311,57 @@ export const socialAuth = CatchAsynError(async(req:Request,res:Response,next:Nex
             sendToken(user,200,res) // if user have auth
         }
 
-
-
         
     } catch (error:any) {
         return next(new ErrorHandler(error.message,400))
     }
+})
+
+// update User Info 
+
+interface IUpdateUserInfo{
+    name?:string
+    email?:string
+}
+
+export const updateUserInfo = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
+
+    try {
+
+        const {name,email} = req.body as IUpdateUserInfo
+
+        const userId = req.user?._id
+
+        const user = await userModel.findById(userId)
+
+        if(email && user){
+            // entering email not name then this will call
+            // suppose user is update the email user is exist on your dbs cant be added
+
+            const isEmailExist = await userModel.findOne({email})
+
+            if(isEmailExist){
+                return next(new ErrorHandler("email already exists",400))
+            }
+
+            user.email = email
+
+        }
+        if(name && user){
+            user.name = name
+        }
+
+        await user?.save()
+
+        await redis.set(userId,JSON.stringify(user))
+
+        res.status(201).json({
+            success:true,
+            user
+        })
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+
 })

@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, getUserInfo, loginUser, logoutUser, registerationUser, socialAuth, updateAccessToken } from '../controllers/userController';
+import { activateUser, getUserInfo, loginUser, logoutUser, registerationUser, socialAuth, updateAccessToken, updateUserInfo } from '../controllers/userController';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 
@@ -18,5 +18,7 @@ userRouter.get('/refresh',updateAccessToken) // when we hitting it we getting ne
 userRouter.get('/me',isAuthenticated,getUserInfo)
 
 userRouter.post('/social-auth',socialAuth)
+
+userRouter.put('/update-user-info',isAuthenticated,updateUserInfo)
 
 export default userRouter

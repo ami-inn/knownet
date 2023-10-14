@@ -24,8 +24,8 @@ const refreshTokenExpire = parseInt(
 
 // options for cookies
 export const accessTokenOptions: ITokenOptions = {
-  expires: new Date(Date.now() + accessTokenExpire * 60*60* 1000), //5 * 1000 milli sec its wrong
-  maxAge: accessTokenExpire * 60 * 60* 1000, //5 min days
+  expires: new Date(Date.now() + accessTokenExpire * 60*60* 1000), //3 * 1000 milli sec its wrong
+  maxAge: accessTokenExpire * 60 * 60* 1000, //5 min days 5 min sec and millisecond 
   httpOnly: true,
   sameSite: "lax",
   // secure:true only when in producction mode
