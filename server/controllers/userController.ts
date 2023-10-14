@@ -2,12 +2,12 @@ import { Request,Response,NextFunction } from "express";
 import userModel, { IUser } from "../models/usermodel";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsynError } from "../middleware/catchAsyncError";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 require('dotenv').config()
 import ejs from 'ejs'
 import path from "path";
 import sendMail from "../utils/sendMail";
-import { sendToken } from "../utils/jwt";
+import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
 import { isAsyncFunction } from "util/types";
 import { redis } from "../utils/redis";
 
@@ -209,4 +209,58 @@ export const logoutUser = CatchAsynError(async(req:Request,res:Response,next:Nex
     } catch (error:any) {
         return next(new ErrorHandler(error.message,404))
     }
+})
+
+
+// update access token
+
+// these will simply update our access token because it expire after 5 min . so we need to update it 
+
+export const updateAccessToken = CatchAsynError(async(req:Request,res:Response,next:NextFunction) =>{
+
+    try {
+
+        const refresh_token = req.cookies.refresh_token as string
+
+        // we need to validate the refresh token
+        const decoded = jwt.verify(refresh_token,process.env.REFRESH_TOKEN as string
+            ) as JwtPayload
+
+            const message = "Could not refresh token"
+
+            if(!decoded){
+                return next(new ErrorHandler(message,400))
+            }
+
+            // refresh token will expire after 3 days
+            // then automatically call this oune and change and refresh and accqess token this mean refresh token never expires
+
+            const session = await redis.get(decoded.id as string)
+
+            if(!session){
+                return next(new ErrorHandler(message,400))
+            }
+
+            const user = JSON.parse(session)
+
+            const accessToken = jwt.sign({id:user._id},process.env.ACCESS_TOKEN as string,{expiresIn:"5m"})
+
+            const refreshToken = jwt.sign({id:user._id},process.env.REFRESH_TOKEN as string,{expiresIn:"3d"})
+
+            // we successfully sign two new token
+
+            // update the cookie
+
+            res.cookie("access_token",accessToken,accessTokenOptions)
+            res.cookie("refresh_token",refreshToken,refreshTokenOptions)
+
+            res.status(200).json({
+                status: "success",
+                accessToken
+            })
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,404))
+    }
+
 })

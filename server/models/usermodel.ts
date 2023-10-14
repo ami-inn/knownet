@@ -84,13 +84,13 @@ userSchema.pre<IUser>("save", async function (next) {
 // when user login we will create a access token . add it to json webtoken when user reeload or something we compare it
 
 userSchema.methods.SignAccessToken = function () {
-  return jwt.sign({id:this._id},process.env.ACCESS_TOKEN || '') // we are simply sign in out access token this will be logged in user_id adding access tooken
+  return jwt.sign({id:this._id},process.env.ACCESS_TOKEN || '',{expiresIn:"5m"}) // we are simply sign in out access token this will be logged in user_id adding access tooken
 }
 
 // sign refresh token
 
 userSchema.methods.SignRefreshToken = function () {
-  return jwt.sign({id:this._id},process.env.REFRESH_TOKEN || "")
+  return jwt.sign({id:this._id},process.env.REFRESH_TOKEN || "",{expiresIn:'3d'})
 }
 
 // compare password

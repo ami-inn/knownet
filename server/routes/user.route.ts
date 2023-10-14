@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, loginUser, logoutUser, registerationUser } from '../controllers/userController';
+import { activateUser, loginUser, logoutUser, registerationUser, updateAccessToken } from '../controllers/userController';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 
@@ -12,5 +12,8 @@ userRouter.post('/activate-user',activateUser)
 userRouter.post('/login',loginUser)
 
 userRouter.get('/logout',isAuthenticated,authorizeRoles("admin"), logoutUser)
+
+userRouter.get('/refresh',updateAccessToken) // when we hitting it we getting new tokens
+
 
 export default userRouter
