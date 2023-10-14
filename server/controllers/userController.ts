@@ -285,3 +285,34 @@ export const getUserInfo = CatchAsynError(async(req:Request,res:Response,next:Ne
     }
 
 })
+
+interface iSocialAuthBody{
+    name:string
+    email:string
+    avatar:string
+}
+
+//  Social auth
+
+export const socialAuth = CatchAsynError(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+
+        const {email,name,avatar} = req.body as iSocialAuthBody
+
+        const user = await userModel.findOne({email})
+
+        if(!user){
+            const newUser = await userModel.create({avatar,name,email})
+            sendToken(newUser,200,res)
+        }
+        else{
+            sendToken(user,200,res) // if user have auth
+        }
+
+
+
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})

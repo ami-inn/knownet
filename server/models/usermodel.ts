@@ -43,7 +43,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please enter your password"],
+      // required: [true, "Please enter your password"], // other wise social auth doesnot work
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
