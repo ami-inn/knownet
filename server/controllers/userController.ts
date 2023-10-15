@@ -12,6 +12,8 @@ import { isAsyncFunction } from "util/types";
 import { redis } from "../utils/redis";
 import { getUserById } from "../services/user.service";
 
+import cloudinary from 'cloudinary'
+
 
 
 // register User
@@ -410,4 +412,63 @@ export const updatePassword = CatchAsynError(async(req:Request,res:Response,next
         return next(new ErrorHandler(error.message,400))
     }
 
+})
+
+// update profile picture or avatar
+
+interface iUpdateProfilePicture{
+    avatar:string
+}
+
+export const updateProfilePicture = CatchAsynError(async(req:Request,res:Response,next:NextFunction) =>{
+    try {
+
+        const {avatar} = req.body as iUpdateProfilePicture
+
+        const userId = req.user?._id
+
+            const user = await userModel.findById(userId)
+
+            if(avatar && user){
+                if(user?.avatar?.public_id){
+                    // if we have publica id that means the profle picture is already uploaded in cloudinary
+                    // we delete the existing picture
+                    await cloudinary.v2.uploader.destroy(user?.avatar?.public_id)
+
+                    //after deleting the old picture
+
+                    const myCloud = await cloudinary.v2.uploader.upload(avatar,{folder:"avatars",width:150})
+        
+                    user.avatar  = {
+                        public_id:myCloud.public_id,
+                        url:myCloud.secure_url
+                    }
+                }else{
+
+                    
+                    const myCloud = await cloudinary.v2.uploader.upload(avatar,{folder:"avatars",width:150})
+        
+                    user.avatar  = {
+                        public_id:myCloud.public_id,
+                        url:myCloud.secure_url
+                    }
+                 
+                }
+            }
+
+            await user?.save()
+
+            await redis.set(userId,JSON.stringify(user))
+
+            res.status(200).json({
+                success:true,
+                user
+            })
+       
+
+     
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
 })
