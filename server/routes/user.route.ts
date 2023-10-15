@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, getUserInfo, loginUser, logoutUser, registerationUser, socialAuth, updateAccessToken, updateUserInfo } from '../controllers/userController';
+import { activateUser, getUserInfo, loginUser, logoutUser, registerationUser, socialAuth, updateAccessToken, updatePassword, updateUserInfo } from '../controllers/userController';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 
@@ -20,5 +20,7 @@ userRouter.get('/me',isAuthenticated,getUserInfo)
 userRouter.post('/social-auth',socialAuth)
 
 userRouter.put('/update-user-info',isAuthenticated,updateUserInfo)
+
+userRouter.put('/update-user-password',isAuthenticated,updatePassword)
 
 export default userRouter

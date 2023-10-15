@@ -13,6 +13,7 @@ import { redis } from "../utils/redis";
 import { getUserById } from "../services/user.service";
 
 
+
 // register User
 
 interface IRegistrationBody{
@@ -360,6 +361,51 @@ export const updateUserInfo = CatchAsynError(async(req:Request,res:Response,next
             user
         })
         
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+
+})
+
+// update user Password
+
+interface iUpdatePassword{
+    oldPassword:string
+    newPassword:string
+}
+
+export const updatePassword = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
+
+    try {
+        
+        const {oldPassword,newPassword} = req.body as iUpdatePassword
+
+        if(!oldPassword || !newPassword){
+            return next(new ErrorHandler("please enter old password and new password",400))
+        }
+
+        const user = await userModel.findById( req.user?._id).select("password") //select false in user model
+
+        if(user?.password == undefined){
+            return next(new ErrorHandler("ivalid user",400))
+        }
+
+        const isPasswordMatch = await user?.comparePassword(oldPassword)
+
+        if(!isPasswordMatch){
+            return next(new ErrorHandler('invalid password',400))
+        }
+
+        // if the user dont have password like goofle auth login user cant have the password so we need to handle that too
+
+        user.password = newPassword
+
+        await user.save()
+        await redis.set(req.user?._id,JSON.stringify(user))
+
+        res.status(200) . json({success:true,user})
+
+
     } catch (error:any) {
         return next(new ErrorHandler(error.message,400))
     }
