@@ -47,12 +47,25 @@ export const authorizeRoles = (...roles:string[]) => {
 
     // its not allow only for admin
 
+    console.log('ernrerre');
+    
+
     return (req:Request,res:Response,next:NextFunction) =>{
+        console.log(req.user,'req user');
+
+        console.log(roles);
+
+        console.log(roles.includes(req.user?.role || ""));
+        
+        
         
         if(!roles.includes(req.user?.role || "")){
 
             return next (new ErrorHandler(`role ${req.user?.role} is not allowed to access this resource`,400))
         }
+
+        console.log('enter');
+        
 
         next()
     }
