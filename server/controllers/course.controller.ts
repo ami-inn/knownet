@@ -142,3 +142,34 @@ export const getAllCourses = CatchAsynError(async(req:Request,res:Response,next:
         return next(new ErrorHandler(error.message,400))
     }
 })
+
+//  get course content = only for our valid user
+
+export const getCourseByUser = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
+    try {
+
+        const userCourseList = req.user?.courses // we have all courses data
+
+        const courseId = req.params.id
+
+        // this means the course exist in the userlist
+        const courseExists = userCourseList?.find((course:any) => course._id.toString() === courseId)
+
+        if(!courseExists){
+            // in the user have courses its not have this course so its showing not eligible
+            return next(new ErrorHandler("you are not eligible to access this course",401))
+        }
+
+        const course = await courseModel.findById(courseId)
+
+        const content = course?.courseData
+
+        res.status(200).json({
+            success:true,
+            content
+        })
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})

@@ -169,7 +169,10 @@ export const loginUser = CatchAsynError(async(req:Request,res:Response,next:Next
             return next(new ErrorHandler("Please Input Email And Password",400))
         }
 
-        const user = await userModel.findOne({email}).select("password")
+        const user = await userModel.findOne({email}).select("+password")
+
+        console.log(user,"usersss");
+        
 
         if(!user){
             return next(new ErrorHandler("invalid email or password",400))
