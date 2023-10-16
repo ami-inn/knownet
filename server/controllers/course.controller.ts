@@ -6,6 +6,9 @@ import { createCourse } from "../services/course.service";
 import courseModel from "../models/course.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
+import ejs from 'ejs'
+import path from "path";
+import sendMail from "../utils/sendMail";
 
 
 
@@ -229,3 +232,91 @@ export const addQuestion = CatchAsynError(async(req:Request,res:Response,next:Ne
     }
 })
 
+
+// add answer in course question
+
+interface IAnswerData{
+    answer:string,
+    courseId:string
+    contentId:string
+    questionId:string
+}
+
+export const addAnswer = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
+    try {
+        const {answer,courseId,contentId,questionId} :IAnswerData =req.body
+        const course:any = await courseModel.findById(courseId)
+
+        if(!mongoose.Types.ObjectId.isValid(contentId)){
+            // checking the objectId is valid or not
+            return next( new ErrorHandler("invalid Content",401))
+        }
+            
+        const courseContent = course?.courseData?.find((item: any) => item._id.equals(contentId))
+
+        if(!courseContent){
+            return next (new ErrorHandler("invalid content id",400))
+        }
+
+        const question = courseContent?.questions?.find((item:any) => item._id.equals(questionId))
+        // find method return an object in that object we are searching it 
+
+        if(!question){
+            return next (new ErrorHandler("invalid question Id",400))
+        }
+
+        // create a new anser
+
+        const newAnswer:any={
+            user:req.user,
+            answer
+        }
+
+        // add the answer to the course content
+        question.questionReplies.push(newAnswer)
+
+        await course?.save()
+
+        // supose anser to the question . admin get notification when ask question . when admin reply we need to send an email to the user
+        // who is q creator who is logged in . if i ask q and i not need to reply that.
+        // when i reply to question no need ot send a email
+
+        if(req.user?._id === question.user._id){
+            // its means this is on reply 
+            // create a new notification
+
+        }
+        else{
+            // other people are anserig new answer add to your question
+            const data={
+                name: question.user.name,
+                title:courseContent.title
+            }
+
+            const html = await ejs.renderFile(path.join(__dirname,"../mails/question-reply.ejs"),data)
+
+            try {
+
+                await sendMail({
+                    email: question.user.email,
+                    subject:"question reply",
+                    template:"question-reply.ejs",
+                    data
+                })
+
+                
+            } catch (error:any) {
+
+                return next(new ErrorHandler(error.message,400))
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            course
+        })
+        
+    } catch (error:any) {
+    return next(new ErrorHandler(error.message,400))        
+    }
+})
