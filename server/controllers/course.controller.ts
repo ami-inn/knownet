@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import ejs from 'ejs'
 import path from "path";
 import sendMail from "../utils/sendMail";
+import { nextTick } from "process";
 
 
 
@@ -382,6 +383,59 @@ export const addReview = CatchAsynError(async(req:Request,res:Response,next:Next
 
         
 
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})
+
+// when add an review only admin can reply to that review
+// add reply in review
+
+interface IAddReplyReviewData{
+    comment:string,
+    courseId:string,
+    reviewId:string
+}
+
+export const AddReplyToReview = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
+
+    try {
+        const {comment,courseId,reviewId} = req.body as IAddReplyReviewData
+
+        const course = await courseModel.findById(courseId)
+
+        if(!course){
+            return next(new ErrorHandler("course not found",404))
+        }
+
+        const review = course?.reviews?.find((rev:any)=>rev._id.toString() === reviewId)
+
+        if(!review){
+            return next(new ErrorHandler("review not found",404))
+        }
+
+        const replyData:any = {
+            user:req.user,
+            comment
+        }
+
+        // course.reviews.push(replyData)
+
+        if(!review.commentReplies){
+            review.commentReplies =[]
+        }
+
+        review.commentReplies?.push(replyData)
+
+        await course.save()
+
+        res.status(200).json({
+            success:true,
+            course
+        })
+
+
+        
     } catch (error:any) {
         return next(new ErrorHandler(error.message,400))
     }
