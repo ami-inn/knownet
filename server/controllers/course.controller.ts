@@ -320,3 +320,69 @@ export const addAnswer = CatchAsynError(async(req:Request,res:Response,next:Next
     return next(new ErrorHandler(error.message,400))        
     }
 })
+
+// add review in course
+
+interface IAddReviewData{
+    review:string;
+    rating:number;
+    userId:string;
+}
+
+export const addReview = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
+    try {
+        
+        const userCourseList = req.user?.courses
+
+        const courseId = req.params.id
+
+        // check the courseId is already exist in user course list based on _id
+        const courseExists = userCourseList?.some((course:any) => course._id.toString() === courseId.toString() )
+
+        if(!courseExists) {
+            return next(new ErrorHandler("you are not allowed to access this course",404))
+        }
+
+        const course = await courseModel.findById(courseId)
+
+        const {review,rating} = req.body as IAddReviewData
+
+        const reviewData:any = {
+            user:req.user,
+            comment:review,
+            rating,
+        }
+
+        course?.reviews.push(reviewData)
+
+        let avg = 0;
+
+        course?.reviews.forEach((rev:any) => {
+            // inital value is 0 . suppose we have rating 5star and an 4 star
+            avg += rev.rating
+        })
+
+        if(course){
+            course.ratings = avg/course.reviews.length //5+4/2 = 4.5 ratings
+        }
+
+        await course?.save()
+
+        const notification = {
+            title:"new Review Recieved",
+            message: `${req.user?.name} has given a review in ${course?.name}`   
+        }
+
+        // create notification
+
+        res.status(200).json({
+            success:true,
+            course
+        })
+
+        
+
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})
