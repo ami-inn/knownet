@@ -6,6 +6,7 @@ require("dotenv").config();
 import {ErrorMiddleware} from "./middleware/error";
 import userRouter from "./routes/user.route";
 import courseRouter from "./routes/course.route";
+import orderRouter from "./routes/order.route";
 
 // Body Parser
 app.use(express.json({ limit: "50mb" })); // limit of the body parser data
@@ -23,8 +24,8 @@ app.use(
 );
 
 // routes
-app.use('/api/v1',userRouter)
-app.use('/api/v1',courseRouter)
+app.use('/api/v1',userRouter,courseRouter,orderRouter);
+// app.use('/api/v1',courseRouter) we are using the same so we can do like above
 
 // Testing Api 
 

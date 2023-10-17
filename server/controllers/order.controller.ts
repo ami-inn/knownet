@@ -37,15 +37,16 @@ export const createOrder = CatchAsynError(async(req:Request,res:Response,next:Ne
 
         const data:any = {
             courseId:course._id,
-            userId:user?._id
+            userId:user?._id,
+            payment_info
         }
 
-        newOrder(data,res,next)
+       
 
         // after creating order we need to send an mail to the user
         const mailData = {
             order:{
-                _id:course._id.slice(0,6),
+                _id:course._id.toString().slice(0,6),
                 name:course.name,
                 price:course.price,
                 date:new Date().toLocaleDateString("en-US",{year:"numeric",month:'long',day:"numeric"})
@@ -82,10 +83,14 @@ export const createOrder = CatchAsynError(async(req:Request,res:Response,next:Ne
             message:`you have a new order from ${course?.name}`
         });
 
-        res.status(201).json({
-            success:true,
-            course
-        })
+        // if(course.purchased)course.purchased +=1
+
+        course.purchased ? course.purchased +=1 : course.purchased ;
+
+        await course.save()
+
+        newOrder(data,res,next)
+     
 
 
 
