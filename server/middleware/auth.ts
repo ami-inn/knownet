@@ -8,11 +8,11 @@ import { redis } from "../utils/redis";
 export const isAuthenticated = CatchAsynError(async(req:Request,res:Response,next:NextFunction) =>{
     const access_token = req.cookies.access_token;
 
-    console.log(req.cookies);
+    // console.log(req.cookies);
     
 
 
-    console.log(access_token);
+    // console.log(access_token);
     
     
 

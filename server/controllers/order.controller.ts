@@ -17,7 +17,13 @@ export const createOrder = CatchAsynError(async(req:Request,res:Response,next:Ne
     try {
         const {courseId,payment_info} = req.body as IOrder
 
+        console.log('enter on order');
+        
+
         const user = await userModel.findById(req.user?._id)
+
+        console.log("user",user);
+        
 
         // we need to search that is this user already purchased or not then the user cant order the same course again
 
@@ -53,7 +59,7 @@ export const createOrder = CatchAsynError(async(req:Request,res:Response,next:Ne
             }
         }
 
-        const html = await ejs.renderFile(path.join(__dirname,"../mails/"),{order:mailData}) // in ejs we are targeting order price like that
+        const html = await ejs.renderFile(path.join(__dirname,"../mails/order-confirmation.ejs"),{order:mailData}) // in ejs we are targeting order price like that
 
 
         try {
@@ -79,21 +85,23 @@ export const createOrder = CatchAsynError(async(req:Request,res:Response,next:Ne
 
         await NotificationModel.create({
             user:user?._id,
-            title:"new order",
+            titles:"new order",
             message:`you have a new order from ${course?.name}`
         });
 
         // if(course.purchased)course.purchased +=1
 
-        course.purchased ? course.purchased +=1 : course.purchased ;
+        if (course.purchased) {
+            course.purchased += 1;
+          } else {
+            course.purchased = 1;
+          }
+          
 
         await course.save()
 
         newOrder(data,res,next)
-     
-
-
-
+    
         
     } catch (error:any) {
         return next(new ErrorHandler(error.message,400))
