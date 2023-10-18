@@ -10,6 +10,7 @@ import ejs from 'ejs'
 import path from "path";
 import sendMail from "../utils/sendMail";
 import { nextTick } from "process";
+import NotificationModel from "../models/notificationModel";
 
 
 
@@ -216,6 +217,14 @@ export const addQuestion = CatchAsynError(async(req:Request,res:Response,next:Ne
         // add this questiont to our course content
         courseContent.questions.push(newQuestion)
 
+        // for notification
+
+        await NotificationModel.create({
+            user:req.user?._id,
+            titles:"new question recieved",
+            message:`new question in ${courseContent.title}`
+        });
+
         // save the updated course
 
         await course?.save()
@@ -268,6 +277,8 @@ export const addAnswer = CatchAsynError(async(req:Request,res:Response,next:Next
 
         // create a new anser
 
+
+
         const newAnswer:any={
             user:req.user,
             answer
@@ -285,6 +296,11 @@ export const addAnswer = CatchAsynError(async(req:Request,res:Response,next:Next
         if(req.user?._id === question.user._id){
             // its means this is on reply 
             // create a new notification
+            await NotificationModel.create({
+                user:req.user?._id,
+                titles:"new question reply recieved",
+                message:`you have a new question reply in ${courseContent.title}`
+            });
 
         }
         else{
