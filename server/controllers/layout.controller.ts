@@ -4,12 +4,19 @@ import ErrorHandler from "../utils/ErrorHandler";
 import layoutModel from "../models/layout.model";
 import cloudinary from 'cloudinary'
 
+
 // create layout
 
 export const createLayout = CatchAsynError(async(req:Request,res:Response,next:NextFunction) => {
     try {
         
         const {type} = req.body;
+
+        const isTypeExist = await layoutModel.findOne({type})
+
+        if(isTypeExist){
+            return next(new ErrorHandler(`${type} already exists`,404))
+        }
 
         if(type === "Banner"){
             const {image,title,subtitle}=req.body
@@ -33,12 +40,35 @@ export const createLayout = CatchAsynError(async(req:Request,res:Response,next:N
 
         if(type === "FAQ"){
             const {faq} = req.body // we have question and answer
-            await layoutModel.create(faq)
+
+            // console.log(faq);
+            
+            const faqItems = await Promise.all(
+                faq.map(async(item:any) => {
+                    return {
+                        question:item.question,
+                        answer:item.answer
+                    }
+                })
+            )
+
+            // console.log(faqItems);
+            
+            await layoutModel.create({type: "FAQ",faq:faqItems})
         }
 
         if(type == 'Categories'){
-            const categories = req.body;
-            await layoutModel.create(categories)
+            const {categories} = req.body;
+            console.log(categories);
+            
+            const categoriesItems = await Promise.all(
+                categories.map(async(item:any) => {
+                    return {
+                        title:item.title
+                    }
+                })
+            )
+            await layoutModel.create({type: "Categories",categories:categoriesItems})
         }
 
         res.status(200).json({

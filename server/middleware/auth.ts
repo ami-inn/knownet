@@ -47,7 +47,7 @@ export const authorizeRoles = (...roles:string[]) => {
 
     // its not allow only for admin
 
-    console.log('ernrerre');
+    // console.log('ernrerre');
     
 
     return (req:Request,res:Response,next:NextFunction) =>{
