@@ -102,7 +102,7 @@ export const getSingleCourse =  CatchAsynError(async(req:Request,res:Response,ne
             
         const course = await courseModel.findById(req.params.id).select("-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links")
 
-        await redis.set(courseId,JSON.stringify(course))
+        await redis.set(courseId,JSON.stringify(course),"EX",604800) // expire on seven days
         
         res.status(200).json({
             success:true,

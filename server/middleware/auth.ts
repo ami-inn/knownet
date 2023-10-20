@@ -33,7 +33,7 @@ export const isAuthenticated = CatchAsynError(async(req:Request,res:Response,nex
     const user = await redis.get(decoded.id) // because store datea in redis cache
 
     if(!user){
-        return next(new ErrorHandler("user not found",400))
+        return next(new ErrorHandler("please login to access the resource",400))
     }
 
     

@@ -245,7 +245,7 @@ export const updateAccessToken = CatchAsynError(async(req:Request,res:Response,n
             const session = await redis.get(decoded.id as string)
 
             if(!session){
-                return next(new ErrorHandler(message,400))
+                return next(new ErrorHandler("please login to access this resources",400))
             }
 
             const user = JSON.parse(session)
@@ -263,6 +263,9 @@ export const updateAccessToken = CatchAsynError(async(req:Request,res:Response,n
             res.cookie("access_token",accessToken,accessTokenOptions)
             res.cookie("refresh_token",refreshToken,refreshTokenOptions)
 
+            await redis.set(user._id,JSON.stringify(user),"EX",604800)  // 604800 means seven days // after the time when we refrsh it shows to login delete automatically
+
+            // when using the websit we refresh the token so it again goes to seven days
             res.status(200).json({
                 status: "success",
                 accessToken
