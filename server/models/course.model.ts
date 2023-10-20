@@ -136,7 +136,7 @@ const courseSchema = new Schema<iCourse>({
         default:0
     }
 
-})
+},{timestamps:true})
 
 const courseModel:Model<iCourse> = mongoose.model("Course",courseSchema)
 
