@@ -4,10 +4,11 @@ import { createLayout, editLayout, getLayoutByType } from "../controllers/layout
  
 const layoutRouter = express.Router()
 
+layoutRouter.get('/get-layout',getLayoutByType)
+
 layoutRouter.post('/create-layout',isAuthenticated,authorizeRoles("admin"),createLayout)
 
 layoutRouter.put('/edit-layout',isAuthenticated,authorizeRoles("admin"),editLayout)
 
-layoutRouter.get('/get-layout',getLayoutByType)
 
 export default layoutRouter;
