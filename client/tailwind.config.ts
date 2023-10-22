@@ -6,11 +6,13 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode:["class"],
   theme: {
     extend: {
     fontFamily:{
     Poppins: ["var(--font-Poppins)"],
     Josefin: ["var(--font-Josefin)"],
+    // we are setting forn here
     },
     backgroundImage: {
     'gradient-radial': 'radial-gradient (var(--tw-gradient-stops))',
