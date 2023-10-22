@@ -1,6 +1,7 @@
 "use client";
 import React, { FC, useState } from "react";
 import Link from "next/link";
+import NavItems from '../utils/NavItems'
 
 type Props = {
   open: boolean;
@@ -8,7 +9,7 @@ type Props = {
   activeItem: number;
 };
 
-const Header: FC<Props> = (props) => {
+const Header: FC<Props> = ({activeItem}) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
 
@@ -47,7 +48,10 @@ if(typeof window !== 'undefined'){
                 </div>
 
                 <div className="flex items-center">
-                   
+                   <NavItems
+                   activeItem={activeItem}
+                   isMobile = {false}
+                   />
                 </div>
 
             </div>
