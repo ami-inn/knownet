@@ -2,6 +2,8 @@
 import React, { FC, useState } from "react";
 import Link from "next/link";
 import NavItems from '../utils/NavItems'
+import {ThemeSwitcher} from '../utils/ThemeSwitcher'
+
 
 type Props = {
   open: boolean;
@@ -52,6 +54,7 @@ if(typeof window !== 'undefined'){
                    activeItem={activeItem}
                    isMobile = {false}
                    />
+                   <ThemeSwitcher/>
                 </div>
 
             </div>
