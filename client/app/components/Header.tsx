@@ -6,6 +6,7 @@ import {ThemeSwitcher} from '../utils/ThemeSwitcher'
 import {HiOutlineMenuAlt1, HiOutlineUserCircle} from 'react-icons/hi'
 import CustomModal from '../utils/CustomModal'
 import Login from '../components/Auth/Login'
+import SignUp from '../components/Auth/SignUp'
 
 type Props = {
   open: boolean;
@@ -124,6 +125,24 @@ if(e.target.id === 'screen'){
               setRoute={setRoute}
               activeItem={activeItem}
               component={Login}
+              />
+            )
+          }
+          </>
+        )
+      }
+
+{
+        route === "SignUp" && (
+          <>
+          {
+            open && (
+              <CustomModal
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={SignUp}
               />
             )
           }
