@@ -29,6 +29,7 @@ const SignUp: FC<Props> = ({setRoute}) => {
     onSubmit: async ({ email, password }) => {
       console.log(email, password);
       // here implement rtk query action
+      setRoute("verification")
     },
   });
 
