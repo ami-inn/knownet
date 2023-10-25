@@ -20,7 +20,7 @@ const Page:FC<Props> = (props) =>{
       <Heading 
       title="Know net"
       description="Know net is a platform for students to learn and get help from teachers"
-      keywords="programming, mern, Ai" 
+      keywords="programming,Mongodb,React,Nodejs,Frontend,Backend,MERN" 
       />
       <Header
       open={open}
