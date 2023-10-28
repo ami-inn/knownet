@@ -50,7 +50,7 @@ const SignUp: FC<Props> = ({setRoute}) => {
   const formik = useFormik({
     initialValues: {name:"", email: "", password: "" },
     validationSchema: schema,
-    onSubmit: async ({ email, password }) => {
+    onSubmit: async ({name, email, password }) => {
       // console.log(email, password);
       // here implement rtk query action
       // setRoute("verification")
