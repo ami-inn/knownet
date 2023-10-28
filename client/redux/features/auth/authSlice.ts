@@ -1,6 +1,6 @@
 // kind of reducer
 
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 
 const initialState = {
@@ -12,11 +12,11 @@ const authSlice = createSlice({
     name:"auth",
     initialState,
     reducers:{
-        userRegistration : (state,action)=>{
+        userRegistration : (state,action:PayloadAction<{token:string}>)=>{
             // it will be global state
             state.token = action.payload.token //we are setting the token
         },
-        userLoggedIn:(state,action)=>{
+        userLoggedIn:(state,action:PayloadAction<{accessToken:string,user:string}>)=>{
             state.token = action.payload.accessToken
             state.user = action.payload.user
         },
