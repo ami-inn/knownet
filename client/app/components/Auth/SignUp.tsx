@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {
@@ -9,6 +9,8 @@ import {
 } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { styles } from "../../styles/style";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 type Props = {
   setRoute: (route: string) => void;
@@ -23,13 +25,40 @@ const schema = yup.object().shape({
 const SignUp: FC<Props> = ({setRoute}) => {
   const [show, setShow] = useState(false);
 
+  // import the useregiststration hood that made in auth api
+
+  const [register,{data,error,isSuccess}] = useRegisterMutation() // we need to call registration because in this auth api  we put it regitser
+                      // we get the error here its adv of rtk querey its build in. we get all the data here
+
+    useEffect(()=>{
+
+      if(isSuccess){
+        const message = data?.message || "Registration Successfully";
+        toast.success(message)
+        setRoute("verification")
+      }
+
+      if(error){
+        if("data" in error){
+          const errorData = error as any;
+          toast.error(errorData.data.message)
+        }
+      }
+
+    },[isSuccess,error,data?.message,setRoute])
+
   const formik = useFormik({
     initialValues: {name:"", email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
-      console.log(email, password);
+      // console.log(email, password);
       // here implement rtk query action
-      setRoute("verification")
+      // setRoute("verification")
+
+      const data={name,email,password}
+
+      await register(data)
+
     },
   });
 

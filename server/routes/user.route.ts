@@ -1,9 +1,10 @@
 import express from 'express';
 import { activateUser, deleteUser, getAllUsers, getUserInfo, loginUser, logoutUser, registerationUser, socialAuth, updateAccessToken, updatePassword, updateProfilePicture, updateUserInfo, updateUserRole } from '../controllers/userController';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
-
+import cors from 'cors'
 
 const userRouter = express.Router()
+// userRouter.options('/registration', cors());
 
 userRouter.post('/registration',registerationUser)
 

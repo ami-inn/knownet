@@ -22,7 +22,8 @@ app.use(cookieParser());
 // if any one try to add this api in any other server. they can heat our server
 app.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: "http://localhost:3000",
+    credentials: true,
   })
 );
 
