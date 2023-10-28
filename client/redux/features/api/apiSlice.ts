@@ -1,4 +1,5 @@
 import {createApi,fetchBaseQuery} from '@reduxjs/toolkit/query/react'
+import { userLoggedIn } from '../auth/authSlice';
 
 
 export const apiSlice = createApi({
@@ -14,9 +15,29 @@ export const apiSlice = createApi({
                 method:"GET",
                 credentials:"include" as const,
             })
-        })
+        }),
+        loadUser:builder.query({
+            query:(data)=>({
+                url:"me",
+                method:"GET",
+                credentials:"include" as const,
+            }),
+            async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+                try {
+                  const result = await queryFulfilled; // we get the data when it success
+                  dispatch(
+                    userLoggedIn({
+                      accessToken: result.data.activationToken,
+                      user:result.data.user
+                    })
+                  );
+                } catch (error: any) {
+                  console.log(error);
+                }
+              },
+        }),
 
     }) 
 })
 
-export const {useRefreshTokenQuery} = apiSlice
+export const {useRefreshTokenQuery,useLoadUserQuery} = apiSlice
