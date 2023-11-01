@@ -40,11 +40,12 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
       if(data){
         socialAuth({email:data.user?.email,name:data.user?.name,avatar:data.user?.image})
       }
+      if(isSuccess){
+        toast.success("login successfully")
+      }
     }
 
-    if(isSuccess){
-      toast.success("login successfully")
-    }
+
 
   },[data,user])
 
