@@ -8,6 +8,9 @@ import CustomModal from "../utils/CustomModal";
 import Login from "../components/Auth/Login";
 import SignUp from "../components/Auth/SignUp";
 import Verification from '../components/Auth/Verification'
+import { useSelector } from "react-redux";
+import Image from "next/image";
+import avatar from '../../public/assets/avatar.jpg'
 
 type Props = {
   open: boolean;
@@ -22,6 +25,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
 
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const {user} = useSelector((state:any) => state.auth)
 
   //   when active true
 
@@ -74,11 +78,25 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
-              <HiOutlineUserCircle
-                size={25}
-                className="hidden 800px:block cursor-pointer dark:text-white text-black"
-                onClick={() => setOpen(true)}
-              />
+              {
+                user ? 
+                <Link href={'/profile'}>
+                <Image
+                src={user.avatar?user.avatar:avatar}
+                alt="image"
+                className="w-[30px] h-[30px] rounded-full cursor-pointer"
+                />
+                </Link>
+                :
+                <HiOutlineUserCircle
+                  size={25}
+                  className="hidden 800px:block cursor-pointer dark:text-white text-black"
+                  onClick={() => setOpen(true)}
+                />
+              }
+
+
+
             </div>
           </div>
         </div>
