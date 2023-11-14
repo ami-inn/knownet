@@ -4,7 +4,7 @@ import React,{FC, useState} from 'react'
 import SiderBarProfile from './SiderBarProfile'
 import { useLogoutQuery } from '@/redux/features/auth/authApi'
 import { signOut } from 'next-auth/react'
-import {redirect} from 'next/navigation'
+import ProfileInfo from './ProfileInfo'
 
 type Props = {
   user:any
@@ -56,7 +56,17 @@ const Profile:FC<Props>  = ({user}) => {
       logoutHandler={logoutHandler}
       />
 
+
+
     </div>
+
+    {
+      active ===1   && (
+        <div className='w-full h-full bg-transparent mt-[80px]'>
+        <ProfileInfo avatar={avatar} user = {user} />
+        </div>
+      )
+    }
 
     </div>
   )
