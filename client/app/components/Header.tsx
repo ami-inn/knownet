@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from '../../public/assets/avatar.jpg'
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import { useLogoutQuery, useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -32,6 +32,11 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const {data} = useSession()
   const [socialAuth,{isSuccess,error}] = useSocialAuthMutation()
 
+  const [logout,setLogout] = useState(false)
+  const {} = useLogoutQuery(undefined,{
+    skip:logout?true:false // when will click logout is false then true
+  })
+
   // in data we gey google auth data
 
   useEffect(()=>{
@@ -40,9 +45,16 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
       if(data){
         socialAuth({email:data.user?.email,name:data.user?.name,avatar:data.user?.image})
       }
-      if(isSuccess){
-        toast.success("login successfully")
+      if(data === null ){
+        if(isSuccess){
+
+          toast.success("login successfully")
+        }
       }
+    }
+
+    if(data == null){
+      setLogout(true)
     }
 
 

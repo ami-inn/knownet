@@ -122,7 +122,7 @@ export const activateUser = CatchAsynError(async(req:Request,res:Response,next:N
 
         const {name,email,password} = newUser.user
 
-        console.log(newUser.user);
+        console.log(newUser.user)
         
         const existUser = await userModel.findOne({email})
         if(existUser){
