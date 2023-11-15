@@ -18,15 +18,19 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const {} = useLoadUserQuery(undefined,{skip:loadUser?false:true})
 
   const imageHandler = async (e: any) => {
-    // console.log('ggg');
+    console.log('ggg');
 
-    const file = e.target.files[0];
+    // const file = e.target.files[0];
+    // console.log(file);
+    
 
     const fileReader = new FileReader();
 
     fileReader.onload = () => {
       if (fileReader.readyState === 2) {
         const avatar = fileReader.result
+        console.log(avatar);
+        
         updateAvatar(avatar)
       }
     };
@@ -48,7 +52,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
         
     }
 
-  },[isSuccess])
+  },[isSuccess,error])
 
   return (
     <>

@@ -34,7 +34,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
 
   const [logout,setLogout] = useState(false)
   const {} = useLogoutQuery(undefined,{
-    skip:logout?true:false // when will click logout is false then true
+    skip: !logout ? true : false // when will click logout is false then true
   })
 
   // in data we gey google auth data
@@ -51,11 +51,14 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
           toast.success("login successfully")
         }
       }
-    }
-
+      
     if(data == null){
+      console.log('The problem is here.....');
+      
       setLogout(true)
     }
+    }
+
 
 
 

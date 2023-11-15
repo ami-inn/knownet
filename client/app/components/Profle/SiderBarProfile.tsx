@@ -61,7 +61,7 @@ const SiderBarProfile: FC<Props> = ({
         className={`w-full flex items-center px-3 py-4 cursor-pointer ${
           active === 4? "dark:bg-slate-800 bg-white" : "bg-transparent"
         }`}
-        onClick={() => logoutHandler()}
+        onClick={()=>logoutHandler()}
       >
         <AiOutlineLogout/>
         <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black ">Logout</h5>

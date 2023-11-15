@@ -98,6 +98,8 @@ export const authApi = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
         try { // we get the data when it success
+          console.log('enterredddd on logoutttt');
+          
           dispatch(
           userLoggedOut()
           );

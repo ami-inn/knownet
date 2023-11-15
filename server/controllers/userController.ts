@@ -429,7 +429,13 @@ interface iUpdateProfilePicture{
 export const updateProfilePicture = CatchAsynError(async(req:Request,res:Response,next:NextFunction) =>{
     try {
 
+        console.log('enter heree on update avatar',req.body);
+        
+
         const {avatar} = req.body as iUpdateProfilePicture
+
+        console.log(avatar,'avatarr');
+        
 
         const userId = req.user?._id
 

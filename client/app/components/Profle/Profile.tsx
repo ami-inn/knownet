@@ -16,17 +16,18 @@ const Profile:FC<Props>  = ({user}) => {
   const [avatar,setAvatar]=useState(null)
   const [logout,setLogout] = useState(false)
   const {} = useLogoutQuery(undefined,{
-    skip:logout?true:false // when will click logout is false then true
+
+    
+    skip: !logout ? true : false // when will click logout is false then true
   })
+
+  console.log('logurrr',logout)
 
   const [active,setActive] = useState(1)
   const logoutHandler =async () => {
-  
+    console.log('entered on logoutttttt');
     setLogout(true)
     await signOut()
-
-
-    
   }
 
 
